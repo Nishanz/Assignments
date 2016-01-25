@@ -1,0 +1,176 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>q4</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-01-25"><meta name="DC.source" content="q4.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Sound Simulation in 3 environments - Stairs, Tunnel, Club</a></li></ul></div><pre class="codeinput">clear;clc;
+tic;
+</pre><h2>Sound Simulation in 3 environments - Stairs, Tunnel, Club<a name="2"></a></h2><p>Read any input sound wave, threshold it to remove noise Then perform low-pass filtering so that noise is removed leading to better convolution, and then convolve it with the impulse response of the environment in GPU as time taken is significant, especially as file size increases.</p><pre class="codeinput">[inp,fs_inp]=audioread(<span class="string">'eminem.mp3'</span>);
+
+<span class="comment">%Select a channel</span>
+inp=inp(:,1);
+
+<span class="comment">%Scale the Input to keep it in range and threshold to remove noise</span>
+inp=inp*0.5;
+inp(abs(inp)&lt;0.03)=0;
+
+<span class="comment">% Apply Gaussian Filtering</span>
+gaussFilter = gausswin(7);
+gaussFilter = gaussFilter / sum(gaussFilter);
+inp = conv(inp, gaussFilter,<span class="string">'same'</span>);
+audiowrite(<span class="string">'eminem.wav'</span>,inp,fs_inp);
+inp=gpuArray(inp);
+
+<span class="comment">%Repeat the same for all of the environment impulse responses too.</span>
+[stairs,fs_stairs]=audioread(<span class="string">'stairs.wav'</span>);
+stairs=stairs(:,1);
+stairs(abs(stairs)&lt;0.05)=0;
+stairs=gpuArray(stairs);
+outfile_stairs=gather(conv(inp,stairs,<span class="string">'same'</span>));
+
+[tunnel,fs_tunnel]=audioread(<span class="string">'tunnel.wav'</span>);
+tunnel=tunnel(:,1);
+tunnel = tunnel*0.3;
+tunnel(abs(tunnel)&lt;0.05)=0;
+tunnel=gpuArray(tunnel);
+outfile_tunnel=gather(conv(inp,tunnel,<span class="string">'same'</span>));
+
+[club,fs_club]=audioread(<span class="string">'club.wav'</span>);
+club=club*0.25;
+club=club(:,1);
+club(abs(club)&lt;0.07)=0;
+club=gpuArray(club);
+outfile_club=gather(conv(inp,club,<span class="string">'same'</span>));
+
+<span class="comment">% Write the corresponding output audio files to PC</span>
+
+audiowrite(<span class="string">'eminem_tunnel.wav'</span>,outfile_tunnel,fs_inp);
+audiowrite(<span class="string">'eminem_club.wav'</span>,outfile_club,fs_inp);
+audiowrite(<span class="string">'eminem_stairs.wav'</span>,outfile_stairs,fs_inp);
+
+toc;
+</pre><pre class="codeoutput">Warning: Data clipped when writing file. 
+Warning: Data clipped when writing file. 
+Elapsed time is 23.130124 seconds.
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear;clc;
+tic;
+
+%% Sound Simulation in 3 environments - Stairs, Tunnel, Club
+%
+% Read any input sound wave, threshold it to remove noise
+% Then perform low-pass filtering so that noise is removed leading to
+% better convolution, and then convolve it with the impulse response of the
+% environment in GPU as time taken is significant, especially as file size
+% increases.
+
+[inp,fs_inp]=audioread('eminem.mp3');
+
+%Select a channel
+inp=inp(:,1);
+
+%Scale the Input to keep it in range and threshold to remove noise
+inp=inp*0.5;
+inp(abs(inp)<0.03)=0;
+
+% Apply Gaussian Filtering
+gaussFilter = gausswin(7);
+gaussFilter = gaussFilter / sum(gaussFilter);
+inp = conv(inp, gaussFilter,'same');
+audiowrite('eminem.wav',inp,fs_inp);
+inp=gpuArray(inp);
+
+%Repeat the same for all of the environment impulse responses too.
+[stairs,fs_stairs]=audioread('stairs.wav');
+stairs=stairs(:,1);
+stairs(abs(stairs)<0.05)=0;
+stairs=gpuArray(stairs);
+outfile_stairs=gather(conv(inp,stairs,'same'));
+
+[tunnel,fs_tunnel]=audioread('tunnel.wav');
+tunnel=tunnel(:,1);
+tunnel = tunnel*0.3;
+tunnel(abs(tunnel)<0.05)=0;
+tunnel=gpuArray(tunnel);
+outfile_tunnel=gather(conv(inp,tunnel,'same'));
+
+[club,fs_club]=audioread('club.wav');
+club=club*0.25;
+club=club(:,1);
+club(abs(club)<0.07)=0;
+club=gpuArray(club);
+outfile_club=gather(conv(inp,club,'same'));
+
+% Write the corresponding output audio files to PC
+
+audiowrite('eminem_tunnel.wav',outfile_tunnel,fs_inp);
+audiowrite('eminem_club.wav',outfile_club,fs_inp);
+audiowrite('eminem_stairs.wav',outfile_stairs,fs_inp);
+
+toc;
+##### SOURCE END #####
+--></body></html>
