@@ -1,0 +1,15 @@
+Answer to Q5.3:
+	
+	Yes. We use inverse bilateral filtering for saliency detection. There was a paper about this and I designed an inverse bilteral filter which is run on the boy_smiling.jpg to show the saliency detection using multiple scales of bilateral filter.
+
+Running the Codes (I used a Matlab R2013a)
+	
+	>>q1    (For the entire First Question)
+	>>q2    (For the Histogram Equalization)
+	>>q2_2  (For the Histogram Matching using Ramp)
+	>>q2_3  (For the Histogram Matching using Step)
+	>>q3    (For the National Instruments Image)
+	>>q4    (For the Highboost Filtering Question)
+	>>q5    (For the bilateral filter on Grayscale face.png)
+	>>q5_2  (For the bilateral filter on the Colour Image)
+	>> q5_3 (For the inverse bilateral filter as Saliency Detectors)

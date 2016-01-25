@@ -1,0 +1,31 @@
+im=imread('chip.png');
+size(im);
+out1 = imadjust(im,[],[],0.4);
+out2 = histeq(im);
+out3 = adapthisteq(im);
+out4 = imadjust(histeq(im),[],[],0.4);
+out5 = imadjust(adapthisteq(im));
+out6 = histeq(imadjust(im));
+out7 = adapthisteq(imadjust(im));
+out8 = histeq(adapthisteq(imadjust(im)));
+out9 = contrast(im);
+figure;
+imshow(im);
+figure;
+imshow(out1);
+figure;
+imshow(out2);
+figure;
+imshow(out3);
+figure;
+imshow(out4);
+figure;
+imshow(out5);
+figure;
+imshow(out6);
+figure;
+imshow(out7);
+figure;
+imshow(out8);
+
+

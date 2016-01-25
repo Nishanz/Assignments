@@ -1,0 +1,253 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>q2</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-10-09"><meta name="DC.source" content="q2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Loading and Preprocessing</a></li><li><a href="#2">Proposed Algorithm - Scale, translation, colour, size, brightness invariance</a></li></ul></div><h2>Loading and Preprocessing<a name="1"></a></h2><pre class="codeinput"><span class="comment">%Read images</span>
+im1=imread(<span class="string">'yogasan/y1.jpg'</span>);
+im2=imread(<span class="string">'yogasan/y2.jpg'</span>);
+im3=imread(<span class="string">'yogasan/y3.jpg'</span>);
+im4=imread(<span class="string">'yogasan/y4.jpg'</span>);
+
+<span class="comment">% This is the input image, we can vary it to handle new asanas as well as</span>
+<span class="comment">% new photos of the same asana.</span>
+im = im2;
+level = graythresh(im);
+BW = imcomplement(im2bw(im,level));
+
+<span class="comment">% Resizing gives a fixed size input to give us input shape and size</span>
+<span class="comment">% invariance.</span>
+im = imresize(im, [500 400]);
+</pre><h2>Proposed Algorithm - Scale, translation, colour, size, brightness invariance<a name="2"></a></h2><pre class="codeinput"><span class="comment">% Calculate the bounding box and crop. This provides translation invariance</span>
+<span class="comment">% in all axes. Rotation invariance is not required as it is always assumed</span>
+<span class="comment">% that ground is below and images are always upright.</span>
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,<span class="string">'remove'</span>);
+
+<span class="comment">%Resizing again provides with scale invariance.</span>
+BW3inp = imresize(BW3, [500 400]);
+
+<span class="comment">%Repeating the same procedure with all images.</span>
+level = graythresh(im1);
+BW = imcomplement(im2bw(im1,level));
+im1 = imresize(im1, [500 400]);
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,<span class="string">'remove'</span>);
+BW31 = imresize(BW3, [500 400]);
+
+level = graythresh(im2);
+BW = imcomplement(im2bw(im2,level));
+im2 = imresize(im2, [500 400]);
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,<span class="string">'remove'</span>);
+BW32 = imresize(BW3, [500 400]);
+
+level = graythresh(im3);
+BW = imcomplement(im2bw(im3,level));
+im3 = imresize(im3, [500 400]);
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,<span class="string">'remove'</span>);
+BW33 = imresize(BW3, [500 400]);
+
+level = graythresh(im4);
+BW = imcomplement(im2bw(im4,level));
+im4 = imresize(im4, [500 400]);
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,<span class="string">'remove'</span>);
+BW34 = imresize(BW3, [500 400]);
+
+mxval = 10000000;
+
+<span class="comment">% Calculating the RMSE difference between the resultant feature images.</span>
+<span class="keyword">if</span> sum(sum(255*(abs(BW3inp(:,:)-BW31(:,:)))))&lt;mxval
+    mxval=sum(sum(255*(abs(BW3inp(:,:)-BW31(:,:)))));
+    val = 1;
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> sum(sum(255*(abs(BW3inp(:,:)-BW32(:,:)))))&lt;mxval
+    mxval=sum(sum(255*(abs(BW3inp(:,:)-BW32(:,:)))));
+    val = 2;
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> sum(sum(255*(abs(BW3inp(:,:)-BW33(:,:)))))&lt;mxval
+    mxval=sum(sum(255*(abs(BW3inp(:,:)-BW33(:,:)))));
+    val = 3;
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> sum(255*(sum(abs(BW3inp(:,:)-BW34(:,:)))))&lt;mxval
+    mxval=sum(255*(sum(abs(BW3inp(:,:)-BW34(:,:)))));
+    val = 4;
+<span class="keyword">end</span>
+
+disp(val);
+</pre><pre class="codeoutput">     2
+
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Loading and Preprocessing
+
+%Read images
+im1=imread('yogasan/y1.jpg');
+im2=imread('yogasan/y2.jpg');
+im3=imread('yogasan/y3.jpg');
+im4=imread('yogasan/y4.jpg');
+
+% This is the input image, we can vary it to handle new asanas as well as 
+% new photos of the same asana.
+im = im2;
+level = graythresh(im);
+BW = imcomplement(im2bw(im,level));
+
+% Resizing gives a fixed size input to give us input shape and size
+% invariance.
+im = imresize(im, [500 400]);
+
+%% Proposed Algorithm - Scale, translation, colour, size, brightness invariance
+
+% Calculate the bounding box and crop. This provides translation invariance
+% in all axes. Rotation invariance is not required as it is always assumed
+% that ground is below and images are always upright.
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,'remove');
+
+%Resizing again provides with scale invariance.
+BW3inp = imresize(BW3, [500 400]);
+
+%Repeating the same procedure with all images.
+level = graythresh(im1);
+BW = imcomplement(im2bw(im1,level));
+im1 = imresize(im1, [500 400]);
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,'remove');
+BW31 = imresize(BW3, [500 400]);
+
+level = graythresh(im2);
+BW = imcomplement(im2bw(im2,level));
+im2 = imresize(im2, [500 400]);
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,'remove');
+BW32 = imresize(BW3, [500 400]);
+
+level = graythresh(im3);
+BW = imcomplement(im2bw(im3,level));
+im3 = imresize(im3, [500 400]);
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,'remove');
+BW33 = imresize(BW3, [500 400]);
+
+level = graythresh(im4);
+BW = imcomplement(im2bw(im4,level));
+im4 = imresize(im4, [500 400]);
+CC = bwconncomp(BW);
+stats = regionprops(CC);
+BW2=imcrop(BW,stats(1).BoundingBox);
+BW3 = bwmorph(BW2,'remove');
+BW34 = imresize(BW3, [500 400]);
+
+mxval = 10000000;
+
+% Calculating the RMSE difference between the resultant feature images.
+if sum(sum(255*(abs(BW3inp(:,:)-BW31(:,:)))))<mxval
+    mxval=sum(sum(255*(abs(BW3inp(:,:)-BW31(:,:)))));
+    val = 1;
+end
+
+if sum(sum(255*(abs(BW3inp(:,:)-BW32(:,:)))))<mxval
+    mxval=sum(sum(255*(abs(BW3inp(:,:)-BW32(:,:)))));
+    val = 2;
+end
+
+if sum(sum(255*(abs(BW3inp(:,:)-BW33(:,:)))))<mxval
+    mxval=sum(sum(255*(abs(BW3inp(:,:)-BW33(:,:)))));
+    val = 3;
+end
+
+if sum(255*(sum(abs(BW3inp(:,:)-BW34(:,:)))))<mxval
+    mxval=sum(255*(sum(abs(BW3inp(:,:)-BW34(:,:)))));
+    val = 4;
+end
+
+disp(val);
+##### SOURCE END #####
+--></body></html>

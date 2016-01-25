@@ -1,0 +1,17 @@
+################################
+
+DIP Report - Ameya Prabhu
+     201402004
+
+################################
+
+Q1b) It does not work. Because simple L2 norm cannot recognize the changed values of brightness and contrast.
+
+Q1c) Yes. Because it is invariant to the change in brightness and contrast.
+
+Q1d) Yes. Integral Images does considerably faster.
+
+Q1e) We can use gaussian pyramid scaling to greatly improve the speed of our code. We could do the fourier transform and apply the normxcorr2 function in each of the images.
+
+
+
