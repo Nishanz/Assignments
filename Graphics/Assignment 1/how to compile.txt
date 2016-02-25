@@ -1,0 +1,2 @@
+ g++ -o sample2D Sample_GL3_2D.cpp glad.c -L/usr/local/lib -lglfw3 -pthread -lGLEW -lGLU -lGL -lrt -lXrandr -lXxf86vm -lXi -lXinerama -lX11 -ldl -lXcursor -L/usr/local/include -I/usr/include/freetype2/ -I/home/ameya/Simple\ OpenGL\ Image\ Library/ -lSOIL -lftgl
+ ./Sample2D

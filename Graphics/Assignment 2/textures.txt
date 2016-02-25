@@ -1,0 +1,5 @@
+beach.png
+Textures/player.jpg
+Textures/water_2.jpg
+Textures/obstacle.jpg
+Textures/texture_brick.jpg
