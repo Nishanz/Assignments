@@ -1,0 +1,26 @@
+%% Spectrogram making and plotting
+%
+% a) Load the files
+% b) Calculate the stft by our Short-time Fourier Transform Function
+% (Courtesy - Hristo Zhivomirov)
+% c) Plot the appropriate plotting functions to obtain a Spectrogram
+% d) Plot the actual spectrogram as provided
+load laughter; 
+[S,F,T] = stft(y,256,128,Fs);
+figure;
+imagesc(F,T,20*log10(abs(S)))
+axis xy; axis tight; colorbar; view(0,90);
+ylabel('Time');
+xlabel('Frequency (Hz)');
+figure;
+spectrogram(y,256,128,Fs);
+
+load train;
+[S,F,T] = stft(y,256,128,Fs);
+figure;
+imagesc(F,T,20*log10(abs(S)))
+axis xy; axis tight; colorbar; view(0,90);
+ylabel('Time');
+xlabel('Frequency (Hz)');
+figure;
+spectrogram(y,256,128,Fs);

@@ -1,0 +1,255 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>q4</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-09"><meta name="DC.source" content="q4.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Phase 1 - Stitching files using xcorr function</a></li><li><a href="#3">Phase 2 - Stitching the parts to give the combined signal</a></li></ul></div><pre class="codeinput">clc;clear;
+</pre><h2>Phase 1 - Stitching files using xcorr function<a name="2"></a></h2><p>- By Ameya Prabhu</p><pre class="codeinput"><span class="comment">% Read the input files</span>
+[inp1,fs_inp1]=audioread(<span class="string">'1.wav'</span>);
+[inp2,fs_inp2]=audioread(<span class="string">'2.wav'</span>);
+[inp3,fs_inp3]=audioread(<span class="string">'3.wav'</span>);
+[inp4,fs_inp4]=audioread(<span class="string">'4.wav'</span>);
+[inp5,fs_inp5]=audioread(<span class="string">'5.wav'</span>);
+
+<span class="comment">% Convert 2 channel input to 1 channel for the sake of simplicity</span>
+inp1 = inp1(:,1);
+inp2 = inp2(:,1);
+inp3 = inp3(:,1);
+inp4 = inp4(:,1);
+inp5 = inp5(:,1);
+
+<span class="comment">% Apply heavy Gaussian filtering to the input signal</span>
+gaussFilter = gausswin(29);
+gaussFilter = gaussFilter / sum(gaussFilter);
+inp1(:,1) = conv(inp1(:,1), gaussFilter,<span class="string">'same'</span>);
+inp2(:,1) = conv(inp2(:,1), gaussFilter,<span class="string">'same'</span>);
+inp3(:,1) = conv(inp3(:,1), gaussFilter,<span class="string">'same'</span>);
+inp4(:,1) = conv(inp4(:,1), gaussFilter,<span class="string">'same'</span>);
+inp5(:,1) = conv(inp5(:,1), gaussFilter,<span class="string">'same'</span>);
+
+end1_beg = (size(inp1,1)-fs_inp1*4);
+end2_beg = (size(inp2,1)-fs_inp2*4);
+end3_beg = (size(inp3,1)-fs_inp3*4);
+end4_beg = (size(inp4,1)-fs_inp4*4);
+end5_beg = (size(inp5,1)-fs_inp5*4);
+
+endclip = zeros(176400,5);
+startclip = zeros(176400,5);
+
+endclip(:,1) = inp1(end1_beg+1:size(inp1,1));
+endclip(:,2) = inp2(end2_beg+1:size(inp2,1));
+endclip(:,3) = inp3(end3_beg+1:size(inp3,1));
+endclip(:,4) = inp4(end4_beg+1:size(inp4,1));
+endclip(:,5) = inp5(end5_beg+1:size(inp5,1));
+
+startclip(:,1) = inp1(1:fs_inp1*4);
+startclip(:,2) = inp2(1:fs_inp2*4);
+startclip(:,3) = inp3(1:fs_inp3*4);
+startclip(:,4) = inp4(1:fs_inp4*4);
+startclip(:,5) = inp5(1:fs_inp5*4);
+
+<span class="comment">% Plot the xcorr matrix.</span>
+acorv=zeros(5,5);
+lag=zeros(5,5);
+
+<span class="keyword">for</span> i =1:5
+    <span class="keyword">for</span> j=1:5
+        [acor,lag] = xcorr(endclip(:,i),startclip(:,j));
+        acorv(i,j)=max(abs(acor));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Display the first part of the output - Order of files according to our</span>
+<span class="comment">% xcorr Matrices</span>
+<span class="comment">%</span>
+disp(acorv);
+disp(<span class="string">'In this matrix, rows are the endings of the clips and the columns being suitable startings of the next.'</span>);
+disp(<span class="string">'We can clearly see the transition between 3 -&gt; 5 -&gt; 1 -&gt; 2 -&gt; 4 being the correct sequence of the tones.'</span>);
+
+disp(<span class="string">'Now, we stitch the tunes together!'</span>);
+</pre><pre class="codeoutput">   1.0e+03 *
+
+    2.8500    5.0836    1.6696    5.0305    2.2736
+    4.4689    3.5045    1.9335    3.6105    2.1152
+    2.1479    2.6167    2.4092    2.7230    4.9987
+    1.8495    1.6817    2.8204    1.7769    2.7004
+    5.6198    2.7093    2.1597    2.7428    2.1480
+
+In this matrix, rows are the endings of the clips and the columns being suitable startings of the next.
+We can clearly see the transition between 3 -&gt; 5 -&gt; 1 -&gt; 2 -&gt; 4 being the correct sequence of the tones.
+Now, we stitch the tunes together!
+</pre><h2>Phase 2 - Stitching the parts to give the combined signal<a name="3"></a></h2><p>Calculate lags for all the waveforms</p><pre class="codeinput">I = acorv(3,5);
+lagDiff = lag(ceil(I));
+lag35 = lagDiff;
+
+I = acorv(5,1);
+lagDiff = lag(ceil(I));
+lag51 = lagDiff;
+
+I = acorv(1,2);
+lagDiff = lag(ceil(I));
+lag12 = lagDiff;
+
+I = acorv(2,4);
+lagDiff = lag(ceil(I));
+lag24 = lagDiff;
+
+finalsignal = [inp3(1:size(inp3,1)+lag35);inp5(1:size(inp5,1)+lag51);inp1(1:size(inp1,1)+lag12);inp2(1:size(inp2,1)+lag24)];
+audiowrite(<span class="string">'q4_stitched_signal.wav'</span>,finalsignal,fs_inp1);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc;clear;
+%% Phase 1 - Stitching files using xcorr function
+% - By Ameya Prabhu
+
+% Read the input files
+[inp1,fs_inp1]=audioread('1.wav');
+[inp2,fs_inp2]=audioread('2.wav');
+[inp3,fs_inp3]=audioread('3.wav');
+[inp4,fs_inp4]=audioread('4.wav');
+[inp5,fs_inp5]=audioread('5.wav');
+
+% Convert 2 channel input to 1 channel for the sake of simplicity
+inp1 = inp1(:,1);
+inp2 = inp2(:,1);
+inp3 = inp3(:,1);
+inp4 = inp4(:,1);
+inp5 = inp5(:,1);
+
+% Apply heavy Gaussian filtering to the input signal
+gaussFilter = gausswin(29);
+gaussFilter = gaussFilter / sum(gaussFilter);
+inp1(:,1) = conv(inp1(:,1), gaussFilter,'same');
+inp2(:,1) = conv(inp2(:,1), gaussFilter,'same');
+inp3(:,1) = conv(inp3(:,1), gaussFilter,'same');
+inp4(:,1) = conv(inp4(:,1), gaussFilter,'same');
+inp5(:,1) = conv(inp5(:,1), gaussFilter,'same');
+
+end1_beg = (size(inp1,1)-fs_inp1*4);
+end2_beg = (size(inp2,1)-fs_inp2*4);
+end3_beg = (size(inp3,1)-fs_inp3*4);
+end4_beg = (size(inp4,1)-fs_inp4*4);
+end5_beg = (size(inp5,1)-fs_inp5*4);
+
+endclip = zeros(176400,5);
+startclip = zeros(176400,5);
+
+endclip(:,1) = inp1(end1_beg+1:size(inp1,1));
+endclip(:,2) = inp2(end2_beg+1:size(inp2,1));
+endclip(:,3) = inp3(end3_beg+1:size(inp3,1));
+endclip(:,4) = inp4(end4_beg+1:size(inp4,1));
+endclip(:,5) = inp5(end5_beg+1:size(inp5,1));
+
+startclip(:,1) = inp1(1:fs_inp1*4);
+startclip(:,2) = inp2(1:fs_inp2*4);
+startclip(:,3) = inp3(1:fs_inp3*4);
+startclip(:,4) = inp4(1:fs_inp4*4);
+startclip(:,5) = inp5(1:fs_inp5*4);
+
+% Plot the xcorr matrix.
+acorv=zeros(5,5);
+lag=zeros(5,5);
+
+for i =1:5
+    for j=1:5
+        [acor,lag] = xcorr(endclip(:,i),startclip(:,j));
+        acorv(i,j)=max(abs(acor));
+    end
+end
+
+% Display the first part of the output - Order of files according to our
+% xcorr Matrices
+%
+disp(acorv);
+disp('In this matrix, rows are the endings of the clips and the columns being suitable startings of the next.');
+disp('We can clearly see the transition between 3 -> 5 -> 1 -> 2 -> 4 being the correct sequence of the tones.');
+
+disp('Now, we stitch the tunes together!');
+
+%% Phase 2 - Stitching the parts to give the combined signal
+% Calculate lags for all the waveforms
+
+I = acorv(3,5);
+lagDiff = lag(ceil(I));
+lag35 = lagDiff;
+
+I = acorv(5,1);
+lagDiff = lag(ceil(I));
+lag51 = lagDiff;
+
+I = acorv(1,2);
+lagDiff = lag(ceil(I));
+lag12 = lagDiff;
+
+I = acorv(2,4);
+lagDiff = lag(ceil(I));
+lag24 = lagDiff;
+
+finalsignal = [inp3(1:size(inp3,1)+lag35);inp5(1:size(inp5,1)+lag51);inp1(1:size(inp1,1)+lag12);inp2(1:size(inp2,1)+lag24)];
+audiowrite('q4_stitched_signal.wav',finalsignal,fs_inp1);
+
+##### SOURCE END #####
+--></body></html>
