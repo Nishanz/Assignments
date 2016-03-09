@@ -157,7 +157,7 @@ I = acorv(2,4);
 lagDiff = lag(ceil(I));
 lag24 = lagDiff;
 
-finalsignal = [inp3(1:size(inp3,1)+lag35);inp5(1:size(inp5,1)+lag51);inp1(1:size(inp1,1)+lag12);inp2(1:size(inp2,1)+lag24)];
+finalsignal = [inp3(1:size(inp3,1)+lag35);inp5(1:size(inp5,1)+lag51);inp1(1:size(inp1,1)+lag12);inp2(1:size(inp2,1)+lag24);inp4(:)];
 audiowrite(<span class="string">'q4_stitched_signal.wav'</span>,finalsignal,fs_inp1);
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -248,7 +248,7 @@ I = acorv(2,4);
 lagDiff = lag(ceil(I));
 lag24 = lagDiff;
 
-finalsignal = [inp3(1:size(inp3,1)+lag35);inp5(1:size(inp5,1)+lag51);inp1(1:size(inp1,1)+lag12);inp2(1:size(inp2,1)+lag24)];
+finalsignal = [inp3(1:size(inp3,1)+lag35);inp5(1:size(inp5,1)+lag51);inp1(1:size(inp1,1)+lag12);inp2(1:size(inp2,1)+lag24);inp4(:)];
 audiowrite('q4_stitched_signal.wav',finalsignal,fs_inp1);
 
 ##### SOURCE END #####
